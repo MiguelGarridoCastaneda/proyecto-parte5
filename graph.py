@@ -389,3 +389,85 @@ class Graph:
             v = edge[1]
             pg.addEdge(u, v, f"{u}->{v}")
         return pg
+
+
+class PyGame:
+    def __init__(self):
+        self.g = Graph()
+        self.d = Display()
+        self.dc = Display_coor()
+
+    def crearGrafos(self, listas, no_nodos):
+
+        tam_X = 1028
+        tam_Y = 600
+
+        for i in range(no_nodos):
+            self.g.agregaVertice(i)
+
+        for i in range(0, no_nodos):
+            self.d.agregaVerticeCoordenada(i)
+        listasLimpia = []
+        for i in listas:
+            for j in i:
+                listasLimpia.append(j)
+
+        for i in range(0, len(listasLimpia)-1, 3):
+            self.g.agregarAristas(listasLimpia[i], listasLimpia[i+1])
+
+        diccionario_Coor = self.dc.display_coor(no_nodos, tam_X, tam_Y)
+
+        self.pygame(diccionario_Coor, self.g.vertices, tam_X, tam_Y)
+
+    def algortimoSpring(self, diccionario_Coor, vertices, tam_X, tam_Y):
+        import math
+
+        c1 = 2
+        c2 = 1
+        c3 = 1
+        c4 = 0.1
+        minimo = 50
+
+        for i in vertices:
+            vecinos = vertices[i].vecinos
+            fx = 0
+            fy = 0
+
+            for n in vertices:
+
+                if n in vecinos:
+
+                    x1 = diccionario_Coor[i].coords[0]
+                    y1 = diccionario_Coor[i].coords[1]
+
+                    x2 = diccionario_Coor[n].coords[0]
+                    y2 = diccionario_Coor[n].coords[1]
+
+                    d = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+
+                    if d < minimo:
+                        continue
+
+                    force = c1*math.log(d/c2)
+                    radians = math.atan2(y2 - y1, x2 - x1)
+                    fx += force*math.cos(radians)
+                    fy += force*math.sin(radians)
+                else:
+
+                    x1 = diccionario_Coor[i].coords[0]
+                    y1 = diccionario_Coor[i].coords[1]
+
+                    x2 = diccionario_Coor[n].coords[0]
+                    y2 = diccionario_Coor[n].coords[1]
+
+                    d = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+                    if d == 0:
+                        continue
+                    force = c3/math.sqrt(d)
+                    radians = math.atan2(y2 - y1, x2 - x1)
+                    fx -= force*math.cos(radians)
+                    fy -= force*math.sin(radians)
+
+            diccionario_Coor[i].coords[0] += c4*fx
+            diccionario_Coor[i].coords[1] += c4*fy
+        return diccionario_Coor
