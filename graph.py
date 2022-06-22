@@ -390,12 +390,27 @@ class Graph:
             pg.addEdge(u, v, f"{u}->{v}")
         return pg
 
+    def distances_btw_v(self):
+        edges_in = []
+        edges_graph = list(self.edges.keys())
+        for k, v in self.nodes.items():
+            for v_n in v.attr['NEIGHBORS']:
+                e = f"{k}->{v_n.id}"
+                e_inv = f"{v_n.id}->{k}"
+                if e in edges_graph:
+                    if e not in edges_in:
+                        self.edges[e].dist = round(np.linalg.norm(
+                            np.array(self.nodes[k].attr['POS_INI']) - np.array(self.nodes[v_n.id].attr['POS_INI'])), 2)
+                        edges_in.append(e)
+
+        # print([e.dist for e in list(self.edges.values())])
+
 
 class PyGame:
     def __init__(self):
         self.g = Graph()
-        self.d = Display()
-        self.dc = Display_coor()
+        # self.d = Display()
+        # self.dc = Display_coor()
 
     def crearGrafos(self, listas, no_nodos):
 

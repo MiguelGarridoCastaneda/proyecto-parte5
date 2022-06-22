@@ -4,3 +4,4 @@ class Edge:
         self.t = t
         self.label = label
         self.attr = {}
+        self.dist = 0
